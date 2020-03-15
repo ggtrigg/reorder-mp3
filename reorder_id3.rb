@@ -94,7 +94,7 @@ begin
     if (path =~ /\.(mp3|ogg)$/) && (File.file?(path)) && (File.size(path) > 0)
       print path if options[:verbose]
       sng = Song.new(path)
-      puts " -> #{sng.to_s}"
+      puts " -> #{sng.to_s}" if options[:verbose]
       hlist.key?(sng.dirname) ? hlist[sng.dirname] << sng : hlist[sng.dirname] = [sng]
 	  end
 	end
@@ -110,10 +110,14 @@ hlist.each do |dir, files|
     # make a temporary directory, move all the files there in the
     # correct (sorted) order, then move them all back here
     # finally remove the temporary directory.
-    Dir.mktmpdir('tmpmp3_', '.') do |tmpdir|
-      ptmp = Pathname.new tmpdir
-      files.sort!.each { |song| FileUtils.mv(song.filename, ptmp, noop: options[:noop], verbose: options[:verbose])}
-      files.each { |song| FileUtils.mv(ptmp + song.filename, '.', noop: options[:noop], verbose: options[:verbose])}
+    begin
+      Dir.mktmpdir('tmpmp3_', '.') do |tmpdir|
+        ptmp = Pathname.new tmpdir
+        files.sort!.each { |song| FileUtils.mv(song.filename, ptmp, noop: options[:noop], verbose: options[:verbose])}
+        files.each { |song| FileUtils.mv(ptmp + song.filename, '.', noop: options[:noop], verbose: options[:verbose])}
+      end
+    rescue => exception
+      warn "Error reordering files. #{exception.message}"
     end
   end
 end
