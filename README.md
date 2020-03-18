@@ -1,10 +1,13 @@
-## Usage: reorder_id3.rb [-h] [topdir]
+## Usage: reorder_id3.rb [-h] [-v] [-n] [topdir]
 
 topdir - the top level directory from which to descend and re-order
   any mp3 files into disk/track order.
   
 If 'topdir' is omitted use the current directory as the top level
 directory.
+
+### Requires
+This script uses the mp3info and ogginfo gems.
 
 ## Background
   This program came about because a number of devices which play mp3s
